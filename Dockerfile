@@ -12,7 +12,7 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV TERM linux
 
 # Airflow
-ARG AIRFLOW_VERSION=1.9.0
+ARG AIRFLOW_VERSION=2.0.0dev
 ARG AIRFLOW_HOME=/usr/local/airflow
 
 # Define en_US.
@@ -59,8 +59,9 @@ RUN set -ex \
     && pip install pyOpenSSL \
     && pip install ndg-httpsclient \
     && pip install pyasn1 \
-    && pip install apache-airflow[crypto,celery,postgres,hive,jdbc,mysql]==$AIRFLOW_VERSION \
     && pip install celery[redis]==4.1.1 \
+    && pip install kubernetes cryptography psycopg2 flower>=0.7.3 \
+    && pip install git+https://github.com/apache/incubator-airflow#egg=apache-airflow \
     && apt-get purge --auto-remove -yqq $buildDeps \
     && apt-get autoremove -yqq --purge \
     && apt-get clean \
