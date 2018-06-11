@@ -60,7 +60,10 @@ RUN set -ex \
     && pip install ndg-httpsclient \
     && pip install pyasn1 \
     && pip install celery[redis]==4.1.1 \
-    && pip install kubernetes cryptography psycopg2 flower>=0.7.3 \
+    && pip install kubernetes \
+    && pip install cryptography \
+    && pip install psycopg2 \
+    && pip install git+https://github.com/mher/flower.git#egg=flower \
     && pip install git+https://github.com/apache/incubator-airflow#egg=apache-airflow \
     && apt-get purge --auto-remove -yqq $buildDeps \
     && apt-get autoremove -yqq --purge \
