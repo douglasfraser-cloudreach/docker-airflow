@@ -11,6 +11,7 @@ TRY_LOOP="20"
 : "${POSTGRES_USER:="airflow"}"
 : "${POSTGRES_PASSWORD:="airflow"}"
 : "${POSTGRES_DB:="airflow"}"
+: "${DO_WAIT_INITDB:=true}"
 
 # Defaults and back-compat
 : "${AIRFLOW__CORE__FERNET_KEY:=${FERNET_KEY:=$(python -c "from cryptography.fernet import Fernet; FERNET_KEY = Fernet.generate_key().decode(); print(FERNET_KEY)")}}"
@@ -69,16 +70,21 @@ fi
 
 case "$1" in
   webserver)
-    airflow initdb
     if [ "$AIRFLOW__CORE__EXECUTOR" = "LocalExecutor" ]; then
       # With the "Local" executor it should all run in one container.
+      airflow initdb
       airflow scheduler &
     fi
+    [ $DO_WAIT_INITDB = true ] && sleep 10
     exec airflow webserver
     ;;
-  worker|scheduler)
+  worker)
     # To give the webserver time to run initdb.
-    sleep 10
+    [ $DO_WAIT_INITDB = true ] && sleep 10
+    exec airflow "$@"
+    ;;
+  scheduler)
+    airflow initdb
     exec airflow "$@"
     ;;
   flower)
